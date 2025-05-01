@@ -44,6 +44,12 @@ app.get("/api/persons/:id", (req,res) => {
     }
 })
 
+app.delete("/api/person/:id", (req,res) => {
+  const  id = Number(req.params.id);
+  const newPersons = persons.filter(person => person.id !== id);
+  res.json(newPersons)
+})
+
 app.get("/info", (req,res) => {
     const reqTime = new Date()
     res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${reqTime}</p>`)
