@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 app.use(express.json())
 
-const persons = [
+let persons = [
     { 
       "id": 1,
       "name": "Arto Hellas", 
@@ -46,24 +46,32 @@ app.get("/api/persons/:id", (req,res) => {
 
 app.delete("/api/person/:id", (req,res) => {
   const  id = Number(req.params.id);
-  const newPersons = persons.filter(person => person.id !== id);
-  res.json(newPersons)
+  persons = persons.filter(person => person.id !== id);
+  res.json(persons)
 })
 
 app.post("/api/persons", (req,res) => {
-  const person = req.body;
+  const data = req.body;
 
-  if(!person.name || !person.number){
+  if(!data.name || !data.number){
 
-    return res.status(400).json({"error":"missing data"})
+    return res.status(400).json({"error":"missing name or number"})
 
-  }else{
+  }
+  const nameExists = persons.find(person => person.name === data.name)
+
+  if(nameExists){
+    //I searched for the correct error code to use when a duplicate entry is submitted.
+    return res.status(409).json({"error":"name must be unique"})
+  }
+  else{
 
     const newPerson = {
       id: Math.floor(Math.random() * 1000000),
-      name:person.name,
-      number:person.number
+      name:data.name,
+      number:data.number
     }
+    persons.push(newPerson)
     return res.json(newPerson)
   }
 
