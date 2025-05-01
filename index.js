@@ -50,6 +50,25 @@ app.delete("/api/person/:id", (req,res) => {
   res.json(newPersons)
 })
 
+app.post("/api/persons", (req,res) => {
+  const person = req.body;
+
+  if(!person.name || !person.number){
+
+    return res.status(400).json({"error":"missing data"})
+
+  }else{
+
+    const newPerson = {
+      id: Math.floor(Math.random() * 1000000),
+      name:person.name,
+      number:person.number
+    }
+    return res.json(newPerson)
+  }
+
+})
+
 app.get("/info", (req,res) => {
     const reqTime = new Date()
     res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${reqTime}</p>`)
