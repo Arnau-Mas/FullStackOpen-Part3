@@ -20,10 +20,12 @@
   "homepage": "https://github.com/Arnau-Mas/FullStackOpen-Part3#readme",
   "description": "",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "5.1.0",
     "morgan": "^1.10.0"
   },
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.7.10",
     "nodemon": "3.1.10"
   }
 }
