@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const personSchema = new mongoose.Schema( {
     name: String,
-    number: Boolean
+    number: Number
   })
 
 personSchema.set("toJSON", {

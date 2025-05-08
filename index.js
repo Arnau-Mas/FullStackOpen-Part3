@@ -42,27 +42,17 @@ app.delete("/api/person/:id", (req,res) => {
 
 app.post("/api/people", (req,res) => {
   const data = req.body;
-
+  
   if(!data.name || !data.number){
-
     return res.status(400).json({"error":"missing name or number"})
-
-  }
-  const nameExists = persons.find(person => person.name === data.name)
-
-  if(nameExists){
-    //I searched for the correct error code to use when a duplicate entry is submitted.
-    return res.status(409).json({"error":"name must be unique"})
-  }
-  else{
-
-    const newPerson = {
-      id: Math.floor(Math.random() * 1000000),
-      name:data.name,
+  }else{
+    const person = new Person({
+      name: data.name,
       number:data.number
-    }
-    persons.push(newPerson)
-    return res.json(newPerson)
+    })
+
+    person.save()
+      .then(savedNote => res.json(savedNote))
   }
 
 })
