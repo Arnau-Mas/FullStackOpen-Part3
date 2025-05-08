@@ -1,5 +1,8 @@
 const express = require('express')
+require("dotenv").config()
 const cors = require("cors");
+const mongoose = require("mongoose")
+const Person = require("./models/person")
 var morgan = require('morgan')
 
 const app = express()
@@ -8,46 +11,27 @@ app.use(cors())
 app.use(express.json())
 app.use(morgan('tiny')) 
 
-let persons = [
-    { 
-      "id": 1,
-      "name": "Arto Hellas", 
-      "number": "040-123456"
-    },
-    { 
-      "id": 2,
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523"
-    },
-    { 
-      "id": 3,
-      "name": "Dan Abramov", 
-      "number": "12-43-234345"
-    },
-    { 
-      "id": 4,
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
-    }
-]
+mongoose.connect(process.env.URI)
+  .then(res => console.log("connected"))
+  .catch(err => console.log(err))
+
 
 app.get("/", (req,res) => {
     console.log("prova")
     res.send("<h1>Welcome to Arnau's backend!</h1>")
 })
 
-app.get("/api/persons", (req,res) => {
-    res.json(persons)
+app.get("/api/people", (req,res) => {
+    Person.find({})
+      .then(people => res.json(people))
+      .catch(err => res.status(400).end())
 })
 
-app.get("/api/persons/:id", (req,res) => {
-    const  id = Number(req.params.id);
-    const person = persons.find(person => person.id === id);
-    if(person){
-        return res.json(person)
-    }else{
-       return res.status(404).end()
-    }
+app.get("/api/person/:id", (req,res) => {
+    const  id = req.params.id;
+    Person.findById(id)
+      .then(person => res.json(person))
+      .catch(err => res.status(404).end())
 })
 
 app.delete("/api/person/:id", (req,res) => {
@@ -56,7 +40,7 @@ app.delete("/api/person/:id", (req,res) => {
   res.json(persons)
 })
 
-app.post("/api/persons", (req,res) => {
+app.post("/api/people", (req,res) => {
   const data = req.body;
 
   if(!data.name || !data.number){
