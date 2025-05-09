@@ -53,7 +53,6 @@ app.delete("/api/person/:id", (req,res, next) => {
 
 app.post("/api/people", (req,res) => {
   const data = req.body;
-  
   if(!data.name || !data.number){
     return res.status(400).json({"error":"missing name or number"})
   }else{
@@ -65,7 +64,23 @@ app.post("/api/people", (req,res) => {
     person.save()
       .then(savedNote => res.json(savedNote))
   }
+})
 
+app.put("/api/person/:id", (req,res,next) => {
+  const data = req.body;
+  console.log("************",data)
+  const id = req.params.id;
+  console.log('id', id)
+  const newData = {number : data.number}
+    Person.findByIdAndUpdate(id, newData, {new:true})
+      .then(updatedPerson => {
+        if(updatedPerson){
+          res.json(updatedPerson)
+        }else{
+          throw new Error("not found")
+        }
+      })
+      .catch(err => next(err))
 })
 
 app.get("/info", (req,res) => {
