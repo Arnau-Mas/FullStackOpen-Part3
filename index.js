@@ -34,16 +34,21 @@ app.get("/api/person/:id", (req,res) => {
       .catch(err => res.status(404).end())
 })
 
-app.delete("/api/person/:id", (req,res) => {
+app.delete("/api/person/:id", (req,res, next) => {
   const  id = req.params.id;
   Person.findByIdAndDelete(id)
     .then(deletedUser => {
-      console.log(deletedUser)
-      res.json({
-        deletedUser,
-        status:"okay"
-      })
+      if(!deletedUser){
+        const err = new Error("No user found");
+        err.name="No user found"
+        err.status = 404;
+        next(err)
+      }else{
+        res.json(deletedUser)
+      }
+      
     })
+    .catch(err => next(err))
 })
 
 app.post("/api/people", (req,res) => {
@@ -68,12 +73,6 @@ app.get("/info", (req,res) => {
     res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${reqTime}</p>`)
 })
 
-const unknownEndpoint = (request, response) => {
-  response.status(404).send({ error: 'unknown endpoint' })
-}
-
-app.use(unknownEndpoint)
-
 const errorHandler = (error, request, response, next) => {
   console.error(error.message)
 
@@ -81,10 +80,22 @@ const errorHandler = (error, request, response, next) => {
     return response.status(400).send({ error: 'malformatted id' })
   } 
 
+  if(error.name === "No user found"){
+    console.log("ha entrattt")
+    return response.status(404).send({error: "User doesn't exist"})
+  }
+
   next(error)
 }
 
 app.use(errorHandler)
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
+
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
