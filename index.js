@@ -17,13 +17,12 @@ mongoose.connect(process.env.URI)
 
 
 app.get("/", (req,res) => {
-    console.log("prova")
     res.send("<h1>Welcome to Arnau's backend!</h1>")
 })
 
-app.get("/api/people", (req,res) => {
+app.get("/api/persons", (req,res) => {
     Person.find({})
-      .then(people => res.json(people))
+      .then(persons => res.json(persons))
       .catch(err => res.status(400).end())
 })
 
@@ -51,7 +50,7 @@ app.delete("/api/person/:id", (req,res, next) => {
     .catch(err => next(err))
 })
 
-app.post("/api/people", (req,res) => {
+app.post("/api/persons", (req,res) => {
   const data = req.body;
   if(!data.name || !data.number){
     return res.status(400).json({"error":"missing name or number"})
@@ -68,9 +67,7 @@ app.post("/api/people", (req,res) => {
 
 app.put("/api/person/:id", (req,res,next) => {
   const data = req.body;
-  console.log("************",data)
   const id = req.params.id;
-  console.log('id', id)
   const newData = {number : data.number}
     Person.findByIdAndUpdate(id, newData, {new:true})
       .then(updatedPerson => {
