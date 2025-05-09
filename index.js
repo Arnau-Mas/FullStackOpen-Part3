@@ -80,9 +80,8 @@ const errorHandler = (error, request, response, next) => {
     return response.status(400).send({ error: 'malformatted id' })
   } 
 
-  if(error.name === "No user found"){
-    console.log("ha entrattt")
-    return response.status(404).send({error: "User doesn't exist"})
+   if (error.status === 404) {
+    return response.status(404).send({ error: error.message })
   }
 
   next(error)
