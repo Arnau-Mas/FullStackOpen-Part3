@@ -35,9 +35,15 @@ app.get("/api/person/:id", (req,res) => {
 })
 
 app.delete("/api/person/:id", (req,res) => {
-  const  id = Number(req.params.id);
-  persons = persons.filter(person => person.id !== id);
-  res.json(persons)
+  const  id = req.params.id;
+  Person.findByIdAndDelete(id)
+    .then(deletedUser => {
+      console.log(deletedUser)
+      res.json({
+        deletedUser,
+        status:"okay"
+      })
+    })
 })
 
 app.post("/api/people", (req,res) => {
@@ -62,7 +68,25 @@ app.get("/info", (req,res) => {
     res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${reqTime}</p>`)
 })
 
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } 
+
+  next(error)
+}
+
+app.use(errorHandler)
+
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
+  console.log(`Server running on port http://localhost:${PORT}`)
 })
